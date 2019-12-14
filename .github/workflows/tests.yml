@@ -24,7 +24,7 @@ jobs:
           go get github.com/restic/rest-server
           ( cd $(go env GOPATH)/src/github.com/restic/rest-server \
             && make \
-            && install -m 755 rest-server $GOBIN/rest-server)
+            && install -m 755 rest-server $GOBIN/rest-server )
 
           # minio
           wget -O $GOBIN/minio https://dl.minio.io/server/minio/release/linux-amd64/minio
@@ -45,14 +45,10 @@ jobs:
           export PATH=$GOBIN:$PATH
 
           # check that dependencies are available
-          gox --help
-          test $? -eq 2
-          calens --help
-          test $? -eq 2
+          ( gox --help ; test $? -eq 2 )
+          ( calens --help ; test $? -eq 2 )
           minio --help
-          test $? -eq 2
           rest-server --help
-          test $? -eq 2
 
           go run -mod=vendor build.go --goos linux
           go run -mod=vendor build.go --goos windows
