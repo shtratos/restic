@@ -17,9 +17,14 @@ jobs:
           export GOBIN=$HOME/bin
 
           # build Go tools
-          go get github.com/restic/rest-server
           go get github.com/restic/calens
           go get github.com/mitchellh/gox
+
+          # build & install rest-server
+          go get github.com/restic/rest-server
+          ( cd $(go env GOPATH)/src/github.com/restic/rest-server \
+            && make \
+            && install -m 755 rest-server $GOBIN/rest-server)
 
           # minio
           wget -O $GOBIN/minio https://dl.minio.io/server/minio/release/linux-amd64/minio
@@ -28,18 +33,18 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v1
 
-      - name: Run apt-get for tmate action
-        run: sudo apt-get update
-
-      - name: Debugging with tmate
-        uses: mxschmitt/action-tmate@v1.0.1
+#      - name: Run apt-get for tmate action
+#        run: sudo apt-get update
+#
+#      - name: Debugging with tmate
+#        uses: mxschmitt/action-tmate@v1.0.1
 
       - name: Build
         run: |
-          rest-server --help
           gox --help
           calens --help
           minio --help
+          rest-server --help
           go run -mod=vendor build.go --goos linux
           go run -mod=vendor build.go --goos windows
           go run -mod=vendor build.go --goos darwin
