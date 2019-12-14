@@ -44,10 +44,16 @@ jobs:
           export GOBIN=$HOME/bin
           export PATH=$GOBIN:$PATH
 
-          #gox --help
+          # check that dependencies are available
+          gox --help
+          test $? -eq 2
           calens --help
+          test $? -eq 2
           minio --help
+          test $? -eq 2
           rest-server --help
+          test $? -eq 2
+
           go run -mod=vendor build.go --goos linux
           go run -mod=vendor build.go --goos windows
           go run -mod=vendor build.go --goos darwin
