@@ -41,6 +41,9 @@ jobs:
 
       - name: Build
         run: |
+          export GOBIN=$HOME/bin
+          export PATH=$GOBIN:$PATH
+
           gox --help
           calens --help
           minio --help
