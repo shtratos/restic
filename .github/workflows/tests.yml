@@ -27,7 +27,7 @@ jobs:
             && install -m 755 rest-server $GOBIN/rest-server )
 
           # minio
-          wget -O $GOBIN/minio https://dl.minio.io/server/minio/release/linux-amd64/minio
+          wget --https-only --no-verbose -O $GOBIN/minio https://dl.minio.io/server/minio/release/linux-amd64/minio
           chmod 755 $GOBIN/minio
 
       - name: Check out code
