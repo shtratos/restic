@@ -45,8 +45,10 @@ jobs:
           export PATH=$GOBIN:$PATH
 
           # check that dependencies are available
-          ( gox --help ; test $? -eq 2 )
-          ( calens --help ; test $? -eq 2 )
+          set +e
+          ( gox --help ; test $? -eq 2 || exit 1 )
+          ( calens --help ; test $? -eq 2 || exit 1 )
+          set -e
           minio --help
           rest-server --help
 
