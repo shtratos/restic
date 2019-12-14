@@ -46,8 +46,8 @@ jobs:
 
           # check that dependencies are available
           set +e
-          ( gox --help ; test $? -eq 2 || exit 1 )
-          ( calens --help ; test $? -eq 2 || exit 1 )
+          ( gox --help ; test $? -eq 2 ) || exit 1
+          ( calens --help ; test $? -eq 2 ) || exit 1
           set -e
           minio --help
           rest-server --help
