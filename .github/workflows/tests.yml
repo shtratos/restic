@@ -17,7 +17,7 @@ jobs:
           export GOBIN=$HOME/bin
 
           # build Go tools
-          # go get github.com/restic/calens
+          go get github.com/restic/calens
           go get github.com/mitchellh/gox
 
           # build & install rest-server
@@ -27,8 +27,8 @@ jobs:
             && install -m 755 rest-server $GOBIN/rest-server )
 
           # minio
-          wget --https-only --no-verbose -O $GOBIN/minio https://dl.minio.io/server/minio/release/linux-amd64/minio
-          chmod 755 $GOBIN/minio
+          # wget --https-only --no-verbose -O $GOBIN/minio https://dl.minio.io/server/minio/release/linux-amd64/minio
+          # chmod 755 $GOBIN/minio
 
       - name: Check out code
         uses: actions/checkout@v1
