@@ -35,17 +35,6 @@ type aclElement struct {
 	Perm uint16
 }
 
-func (a *aclSID) setUID(uid uint32) {
-	*a = aclSID(uid) | (aclUser << 32)
-}
-func (a *aclSID) setGID(gid uint32) {
-	*a = aclSID(gid) | (aclGroup << 32)
-}
-
-func (a *aclSID) setType(tp int) {
-	*a = aclSID(tp) << 32
-}
-
 func (a aclSID) getType() int {
 	return int(a >> 32)
 }
@@ -112,12 +101,12 @@ func (a *acl) decode(xattr []byte) {
 func (a *acl) encode() []byte {
 	buf := new(bytes.Buffer)
 	ae := new(aclElem)
-	binary.Write(buf, binary.LittleEndian, &a.Version)
+	_ = binary.Write(buf, binary.LittleEndian, &a.Version)
 	for _, elem := range a.List {
 		ae.Tag = uint16(elem.getType())
 		ae.Perm = elem.Perm
 		ae.ID = elem.getID()
-		binary.Write(buf, binary.LittleEndian, ae)
+		_ = binary.Write(buf, binary.LittleEndian, ae)
 	}
 	return buf.Bytes()
 }

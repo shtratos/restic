@@ -1,0 +1,69 @@
+name: Build and tests
+on: [push]
+jobs:
+  build:
+    name: Build and Test on Linux
+    strategy:
+      matrix:
+        go-version:
+          - 1.11.x
+          - 1.12.x
+          - 1.13.x
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Set up Go ${{ matrix.go-version }}
+        uses: actions/setup-go@v1
+        with:
+          go-version: ${{ matrix.go-version }}
+        id: go
+
+      - name: Get programs
+        run: |
+          export GOBIN=$HOME/bin
+
+          # build Go tools
+          go get github.com/restic/calens
+          go get github.com/mitchellh/gox
+
+          # build & install rest-server
+          go get github.com/restic/rest-server
+          ( cd $(go env GOPATH)/src/github.com/restic/rest-server \
+            && make \
+            && install -m 755 rest-server $GOBIN/rest-server )
+
+          # minio
+          wget --https-only --no-verbose -O $GOBIN/minio https://dl.minio.io/server/minio/release/linux-amd64/minio
+          chmod 755 $GOBIN/minio
+
+      - name: Check out code
+        uses: actions/checkout@v1
+
+#      - name: Run apt-get for tmate action
+#        run: sudo apt-get update
+#
+#      - name: Debugging with tmate
+#        uses: mxschmitt/action-tmate@v1.0.1
+
+      - name: Build
+        run: |
+          export GOBIN=$HOME/bin
+          export PATH=$GOBIN:$PATH
+
+          # check that required CI tools are available
+          set +e
+          ( gox --help ; test $? -eq 2 ) || exit 1
+          ( calens --help ; test $? -eq 2 ) || exit 1
+          set -e
+          minio --help
+          rest-server --help
+
+          # build
+          go run -mod=vendor build.go --goos linux
+          go run -mod=vendor build.go --goos windows
+          go run -mod=vendor build.go --goos darwin
+
+      - name: Run tests
+        run: |
+          export PATH=$HOME/bin:$PATH
+          go test -mod=vendor ./...
