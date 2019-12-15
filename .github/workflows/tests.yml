@@ -27,8 +27,8 @@ jobs:
             && install -m 755 rest-server $GOBIN/rest-server )
 
           # minio
-          # wget --https-only --no-verbose -O $GOBIN/minio https://dl.minio.io/server/minio/release/linux-amd64/minio
-          # chmod 755 $GOBIN/minio
+          wget --https-only --no-verbose -O $GOBIN/minio https://dl.minio.io/server/minio/release/linux-amd64/minio
+          chmod 755 $GOBIN/minio
 
       - name: Check out code
         uses: actions/checkout@v1
@@ -44,7 +44,7 @@ jobs:
           export GOBIN=$HOME/bin
           export PATH=$GOBIN:$PATH
 
-          # check that dependencies are available
+          # check that required CI tools are available
           set +e
           ( gox --help ; test $? -eq 2 ) || exit 1
           ( calens --help ; test $? -eq 2 ) || exit 1
@@ -52,6 +52,7 @@ jobs:
           minio --help
           rest-server --help
 
+          # build
           go run -mod=vendor build.go --goos linux
           go run -mod=vendor build.go --goos windows
           go run -mod=vendor build.go --goos darwin
